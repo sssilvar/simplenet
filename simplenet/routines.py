@@ -27,11 +27,11 @@ from torchvision import datasets, transforms
 from torch.optim.lr_scheduler import StepLR
 
 
-def training_routine(model, batch_size=48, lr=1e-3, epochs=2, gamma=0.7):
+def training_routine(model, batch_size=48, lr=1e-3, epochs=2, gamma=0.7, dry_run=False):
     use_cuda = torch.cuda.is_available()
     device = torch.device("cuda" if use_cuda else "cpu")
 
-    train_kwargs = {'batch_size': batch_size}
+    train_kwargs = {'batch_size': batch_size, 'shuffle': True}
     if use_cuda:
         cuda_kwargs = {'num_workers': 1,
                        'pin_memory': True,
@@ -50,7 +50,7 @@ def training_routine(model, batch_size=48, lr=1e-3, epochs=2, gamma=0.7):
 
     scheduler = StepLR(optimizer, step_size=1, gamma=gamma)
     for epoch in range(1, epochs + 1):
-        train(model, device, train_loader, optimizer, epoch)
+        train(model, device, train_loader, optimizer, epoch, dry_run=dry_run)
         scheduler.step()
 
     print(model)

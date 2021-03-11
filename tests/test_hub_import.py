@@ -13,6 +13,6 @@ def test_load_from_hub_remote():
     import torch
 
     model, training_routine = torch.hub.load('sssilvar/simplenet', 'simplenet', source='github', force_reload=True)
-    training_routine(model, batch_size=48, lr=1e-3, epochs=20, dry_run=False)
+    training_routine(model, epochs=10, dry_run=False)
     torch.save(model.state_dict(), '/tmp/trained_model.pt')
     return True

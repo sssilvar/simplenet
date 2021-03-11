@@ -46,12 +46,10 @@ def training_routine(model, batch_size=48, lr=1e-3, epochs=2, gamma=0.7, dry_run
                               transform=transform)
     train_loader = torch.utils.data.DataLoader(dataset1, **train_kwargs)
 
-    optimizer = torch.optim.Adadelta(model.parameters(), lr=lr)
+    optimizer = torch.optim.Adam(model.parameters(), lr=lr)
 
-    scheduler = StepLR(optimizer, step_size=1, gamma=gamma)
     for epoch in range(1, epochs + 1):
         train(model, device, train_loader, optimizer, epoch, dry_run=dry_run)
-        scheduler.step()
 
     print(model)
 

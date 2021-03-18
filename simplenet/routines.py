@@ -1,7 +1,7 @@
 import torch.nn.functional as F
 
 
-def train(model, device, train_loader, optimizer, epoch, log_interval=10, dry_run=True):
+def train(model, device, train_loader, optimizer, epoch, log_interval=10, dry_run=True, logger=None):
     model.train()
     for batch_idx, (data, target) in enumerate(train_loader):
         data, target = data.to(device), target.to(device)
@@ -14,6 +14,8 @@ def train(model, device, train_loader, optimizer, epoch, log_interval=10, dry_ru
             print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
                 epoch, batch_idx * len(data), len(train_loader.dataset),
                        100 * batch_idx / len(train_loader), loss.item()))
+            if logger is not None:
+                logger.add_scalar('Training Loss/batch', loss.item(), batch_idx)
             if dry_run:
                 break
 
@@ -27,7 +29,7 @@ from torchvision import datasets, transforms
 from torch.optim.lr_scheduler import StepLR
 
 
-def training_routine(model, batch_size=48, lr=1e-3, epochs=2, gamma=0.7, dry_run=False):
+def training_routine(model, batch_size=48, lr=1e-3, epochs=2, gamma=0.7, dry_run=False, logger=None):
     use_cuda = torch.cuda.is_available()
     device = torch.device("cuda" if use_cuda else "cpu")
 
@@ -49,7 +51,7 @@ def training_routine(model, batch_size=48, lr=1e-3, epochs=2, gamma=0.7, dry_run
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
 
     for epoch in range(1, epochs + 1):
-        train(model, device, train_loader, optimizer, epoch, dry_run=dry_run)
+        train(model, device, train_loader, optimizer, epoch, dry_run=dry_run, logger=logger)
 
     print(model)
 
